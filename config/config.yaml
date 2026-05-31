@@ -1,7 +1,7 @@
 data:
   dataset1_path: '../data/dataset/dataset1' # path dataset root
   dataset2_path: '../data/dataset/dataset2' # path dataset root
-  batch_size: 256
+  batch_size: 1
 
 model:
   device: "cpu"

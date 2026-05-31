@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torchinfo import summary
 
-from utils.visualization import plot_learning_curves, plot_confusion_matrix
+from utils.visualization import plot_learning_curves
 from torchmetrics.classification import MulticlassJaccardIndex, MulticlassConfusionMatrix
 
 class Trainer:

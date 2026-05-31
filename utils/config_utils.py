@@ -4,7 +4,7 @@ import numpy as np
 import yaml
 import torch
 import os
-from torch.utils.data import ConcatDataset, random_split
+from torch.utils.data import ConcatDataset, random_split, Subset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
@@ -27,6 +27,7 @@ def set_seed(seed: int = 42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     print(f"Global seed set to {seed}. Deterministic algorithms enabled.")
+
 
 def get_model(config):
     model_cfg = config.get("model", {})
@@ -53,42 +54,78 @@ def get_model(config):
     model = model.to(device)
     return model
 
-def get_datasets(config):
-    data_cfg = config.get("data", {})
-    dataset1_path = data_cfg.get("dataset1_path", '../data/dataset/dataset1')
-    dataset2_path = data_cfg.get("dataset2_path", '../data/dataset/dataset2')
 
-    transform = A.Compose([
+def get_transforms():
+    val_transform = A.Compose([
         A.Resize(256, 256),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         ToTensorV2(),
     ])
 
+    train_transform = A.Compose([
+        A.Resize(256, 256),
+        A.HorizontalFlip(p=0.5),
+        A.ShiftScaleRotate(
+            shift_limit=0.05,
+            scale_limit=0.1,
+            rotate_limit=10,
+            p=0.5
+        ),
+        A.RandomBrightnessContrast(
+            brightness_limit=0.2,
+            contrast_limit=0.2,
+            p=0.5
+        ),  # Handles day/night and stadium shadows
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+        ToTensorV2(),
+    ])
+
+    return train_transform, val_transform
+
+
+def get_datasets(config):
+    data_cfg = config.get("data", {})
+    dataset1_path = data_cfg.get("dataset1_path", '../data/dataset/dataset1')
+    dataset2_path = data_cfg.get("dataset2_path", '../data/dataset/dataset2')
+
+    train_transform, val_transform = get_transforms()
     ds1_img_dir = os.path.join(dataset1_path, "images")
     ds1_mask_dir = os.path.join(dataset1_path, "masks")
-    dataset1 = FootballDataset1(image_dir=ds1_img_dir, mask_dir=ds1_mask_dir, transform=transform)
+
+    ds1_train_base = FootballDataset1(image_dir=ds1_img_dir, mask_dir=ds1_mask_dir, transform=train_transform)
+    ds1_val_base = FootballDataset1(image_dir=ds1_img_dir, mask_dir=ds1_mask_dir, transform=val_transform)
 
     ds2_img_dir = os.path.join(dataset2_path, "images")
-    dataset2 = FootballDataset2(image_dir=ds2_img_dir, transform=transform)
 
-    def split_dataset(ds, train_pct=0.8, val_pct=0.1):
-        total_len = len(ds)
+    ds2_train_base = FootballDataset2(image_dir=ds2_img_dir, transform=train_transform)
+    ds2_val_base = FootballDataset2(image_dir=ds2_img_dir, transform=val_transform)
+
+    def get_split_indices(total_len, train_pct=0.8, val_pct=0.1):
         train_len = int(total_len * train_pct)
         val_len = int(total_len * val_pct)
-        test_len = total_len - train_len - val_len
         generator = torch.Generator().manual_seed(42)
-        return random_split(ds, [train_len, val_len, test_len], generator=generator)
+        indices = torch.randperm(total_len, generator=generator).tolist()
+        train_idx = indices[:train_len]
+        val_idx = indices[train_len:train_len + val_len]
+        test_idx = indices[train_len + val_len:]
+        return train_idx, val_idx, test_idx
 
+    t_idx1, v_idx1, test_idx1 = get_split_indices(len(ds1_train_base))
+    train1 = Subset(ds1_train_base, t_idx1)
+    val1 = Subset(ds1_val_base, v_idx1)
+    test1 = Subset(ds1_val_base, test_idx1)
 
-    train1, val1, test1 = split_dataset(dataset1)
-    train2, val2, test2 = split_dataset(dataset2)
+    t_idx2, v_idx2, test_idx2 = get_split_indices(len(ds2_train_base))
+    train2 = Subset(ds2_train_base, t_idx2)
+    val2 = Subset(ds2_val_base, v_idx2)
+    test2 = Subset(ds2_val_base, test_idx2)
 
     train_dataset = ConcatDataset([train1, train2])
     val_dataset = ConcatDataset([val1, val2])
     test_dataset = ConcatDataset([test1, test2])
 
-    print(f"Train size: {len(train_dataset)} (DS1: {len(train1)}, DS2: {len(train2)})")
-    print(f"Val size: {len(val_dataset)} (DS1: {len(val1)}, DS2: {len(val2)})")
-    print(f"Test size: {len(test_dataset)} (DS1: {len(test1)}, DS2: {len(test2)})")
+    print(f"Train size: {len(train_dataset)} (DS1: {len(train1)}, DS2: {len(train2)}) | Augmented")
+    print(f"Val size: {len(val_dataset)} (DS1: {len(val1)}, DS2: {len(val2)}) | Pristine")
+    print(f"Test size: {len(test_dataset)} (DS1: {len(test1)}, DS2: {len(test2)}) | Pristine")
 
     return train_dataset, val_dataset, test_dataset

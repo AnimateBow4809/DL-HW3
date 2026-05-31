@@ -66,22 +66,3 @@ def plot_learning_curves(history):
     plt.tight_layout()
     plt.show()
 
-
-def plot_confusion_matrix(y_true, y_pred, class_names=None):
-    y_true = _to_numpy(y_true).astype(int)
-    y_pred = _to_numpy(y_pred).astype(int)
-
-    num_classes = max(np.max(y_true), np.max(y_pred)) + 1
-    cm = np.zeros((num_classes, num_classes), dtype=int)
-    for t, p in zip(y_true, y_pred):
-        cm[t, p] += 1
-
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=class_names if class_names else 'auto',
-                yticklabels=class_names if class_names else 'auto')
-    plt.title('Confusion Matrix')
-    plt.xlabel('Predicted Label')
-    plt.ylabel('True Label')
-    plt.tight_layout()
-    plt.show()

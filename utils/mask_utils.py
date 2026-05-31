@@ -2,7 +2,10 @@
 import numpy as np
 from PIL import Image
 from pycocotools.coco import COCO
+import torch
 from tqdm import tqdm
+from torch.utils.data import DataLoader
+
 
 
 def rgb_to_class_index(mask_rgb, color_map):
@@ -13,6 +16,20 @@ def rgb_to_class_index(mask_rgb, color_map):
 
     return mask_idx
 
+
+
+def compute_class_weights(train_loader: DataLoader, num_classes: int = 8):
+    class_counts = torch.zeros(num_classes, dtype=torch.float64)
+    for x_batch, y_batch in tqdm(train_loader, desc="Counting class pixels"):
+        masks_flat = y_batch.view(-1)
+        batch_counts = torch.bincount(masks_flat, minlength=num_classes)
+        class_counts += batch_counts.to(torch.float64)
+    total_pixels = class_counts.sum()
+    class_counts[class_counts == 0] = 1.0
+    weights = total_pixels / (num_classes * class_counts)
+    for i, weight in enumerate(weights):
+        print(f"Class {i}: {weight.item():.4f}")
+    return weights.to(torch.float32)
 
 # --- Unified Class Indices ---
 # 0: Background/Field/Ground
