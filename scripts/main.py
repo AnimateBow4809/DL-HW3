@@ -55,4 +55,4 @@ if __name__ == '__main__':
         epochs=epochs
     )
     trainer.plot_learning_curves()
-    trainer.save_model(f"../models/saved/model_skip_{use_skip}_expansion_{expansion}_bn_{use_bn}.pth")
+    trainer.save_model(f"../models/saved/model_bs_{batch_size}_skip_{use_skip}_expansion_{expansion}_bn_{use_bn}.pth")
