@@ -3,14 +3,9 @@ import yaml
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 
-from data.data_loader import MnistDataset
-from models.inception_model import InceptionModel
-from models.residual_model import ResidualModel
-from models.resnext_model import ResNeXtModel
 from utils.trainer import Trainer
 
 from utils.config_utils import load_config, get_datasets, get_model
-from utils.mnist_utils import load_mnist_from_pkl, load_fashion_mnist_raw
 
 if __name__ == '__main__':
     config = load_config('../config/config.yaml')

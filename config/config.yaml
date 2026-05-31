@@ -1,17 +1,17 @@
 data:
-  dataset: "fashion" # mnist or fashion
-  mnist_path: '../data/dataset/normal/mnist.pkl' # path to mnist.pkl file
-  fashion_path: '../data/dataset/fashion' # path to fashion mnist directory containing the 4 archive files
+  dataset1_path: '../data/dataset/dataset1' # path dataset root
+  dataset2_path: '../data/dataset/dataset2' # path dataset root
   batch_size: 256
 
 model:
   device: "cpu"
-  arch: "c" # options: a,b,c,d
+  skip_connection : true
+  expansion : "up" # up or trans
+  batch_normalization : false
   epochs: 5
+  num_classes: 8
   early_stopping: false
-  path : '../models/saved/mnist_model_c.pth' # path to model checkpoint set null when training
-  freeze_backbone : true # freeze model backbone
+  path : null # path to model checkpoint set null when training
 optimizer:
-  momentum: 0
   l2_penalty: 0.0001
   lr: 0.01
