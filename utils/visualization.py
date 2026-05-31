@@ -54,12 +54,12 @@ def plot_learning_curves(history):
     ax1.legend()
     ax1.grid(True)
 
-    ax2.plot(epochs, clean_metric(history['train_acc']), label='Train Accuracy', marker='o')
-    if history.get('val_acc'):
-        ax2.plot(epochs, clean_metric(history['val_acc']), label='Validation Accuracy', marker='o')
-    ax2.set_title('Accuracy over Epochs')
+    ax2.plot(epochs, clean_metric(history['train_iou']), label='Train IOU', marker='o')
+    if history.get('val_iou'):
+        ax2.plot(epochs, clean_metric(history['val_iou']), label='Validation IOU', marker='o')
+    ax2.set_title('IOU over Epochs')
     ax2.set_xlabel('Epoch')
-    ax2.set_ylabel('Accuracy')
+    ax2.set_ylabel('IOU')
     ax2.legend()
     ax2.grid(True)
 

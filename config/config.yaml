@@ -4,14 +4,14 @@ data:
   batch_size: 1
 
 model:
-  device: "cpu"
+  device: "cuda"
   skip_connection : true
   expansion : "up" # up or trans
   batch_normalization : false
-  epochs: 5
+  epochs: 10
   num_classes: 8
   early_stopping: false
   path : null # path to model checkpoint set null when training
 optimizer:
   weight_decay: 0.0001
-  lr: 0.01
+  lr: 0.0005
