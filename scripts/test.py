@@ -3,43 +3,40 @@ import yaml
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 
-from models.inception_model import InceptionModel
-from models.residual_model import ResidualModel
-from utils.config_utils import get_datasets, get_model
+from utils.config_utils import load_config, get_datasets, get_model, set_seed
 from utils.trainer import Trainer
 
-
-def load_config(config_path="config.yaml"):
-    with open(config_path, "r") as f:
-        return yaml.safe_load(f)
-
-
 if __name__ == '__main__':
+    set_seed()
     config = load_config('../config/config.yaml')
-    train_dataset, val_dataset, test_dataset = get_datasets(config)
-    y_train = train_dataset.y
-    batch_size = config['data']['batch_size']
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    model_cfg = config.get('model', {})
+    data_cfg = config.get('data', {})
 
-    device = config['model']['device']
-    arch = config['model']['arch']
+    device = model_cfg.get('device', 'cpu')
+    num_classes = model_cfg.get('num_classes', 8)
+    batch_size = data_cfg.get('batch_size', 256)
+
+    _, _, test_dataset = get_datasets(config)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     model = get_model(config)
-    optimizer = torch.optim.SGD(model.parameters(), lr=config['optimizer']['lr'],
-                                momentum=config['optimizer']['momentum'])
+    dummy_optimizer = torch.optim.Adam(model.parameters())
+
     trainer = Trainer(
         device=device,
         model=model,
-        optimizer=optimizer,
+        optimizer=dummy_optimizer,
         loss_fn=CrossEntropyLoss(),
+        num_classes=num_classes,
     )
-    trainer.plot_feature_maps(test_loader)
-    trainer.plot_confusion_matrix(test_loader)
-    trainer.plot_misclassified_predictions(test_loader)
-    test_loss, test_acc = trainer.evaluate(test_loader)
-    per_class_accuracy = trainer.get_per_class_accuracy(test_loader)
-    print(f"Final Test Accuracy: {test_acc:.4f}")
-    for i in range(10):
-        print(f"Class {i} Accuracy: {per_class_accuracy[i]['accuracy']}, "
-              f"Total Samples: {torch.sum(torch.from_numpy(y_train)==i)}")
+
+    print("\n--- Starting Evaluation on Test Set ---")
+    test_loss, test_iou = trainer.evaluate(test_loader)
+    print(f"Final Test Loss: {test_loss:.4f}")
+    print(f"Final Test Overall IoU: {test_iou:.4f}\n")
+
+    per_class_metrics = trainer.get_per_class_metrics(test_loader)
+    print("--- Per-Class IoU ---")
+    for i in range(num_classes):
+        iou = per_class_metrics[i]['IoU']
+        total_pixels = per_class_metrics[i]['total_pixels']
+        print(f"Class {i} IoU: {iou:.4f} | Total Pixels in Test Set: {total_pixels}")
