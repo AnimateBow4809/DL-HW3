@@ -13,5 +13,6 @@ model:
   early_stopping: false
   path : null # path to model checkpoint set null when training
 optimizer:
+  use_focal_loss : false
   weight_decay: 0.0001
   lr: 0.0005

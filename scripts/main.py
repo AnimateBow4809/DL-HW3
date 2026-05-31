@@ -3,6 +3,7 @@ import yaml
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 
+from utils.focal_loss import FocalLoss
 from utils.mask_utils import compute_class_weights
 from utils.trainer import Trainer
 from utils.config_utils import load_config, get_datasets, get_model, set_seed
@@ -13,7 +14,7 @@ if __name__ == '__main__':
     model_cfg = config.get('model', {})
     data_cfg = config.get('data', {})
     opt_cfg = config.get('optimizer', {})
-
+    use_focal_loss = model_cfg.get("use_focal_loss", False)
     device = model_cfg.get('device', 'cpu')
     epochs = model_cfg.get('epochs', 5)
     early_stopping = model_cfg.get('early_stopping', False)
@@ -40,11 +41,15 @@ if __name__ == '__main__':
     )
     class_weights = compute_class_weights(train_loader, num_classes=num_classes)
     class_weights = class_weights.to(device)
+    if use_focal_loss:
+        loss_fn = FocalLoss(weight=class_weights)
+    else:
+        loss_fn = CrossEntropyLoss(weight=class_weights)
     trainer = Trainer(
         device=device,
         model=model,
         optimizer=optimizer,
-        loss_fn=CrossEntropyLoss(weight=class_weights),
+        loss_fn=loss_fn,
         num_classes=num_classes,
     )
 
