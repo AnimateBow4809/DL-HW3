@@ -8,7 +8,7 @@ model:
   skip_connection : true
   expansion : "up" # up or trans
   batch_normalization : false
-  epochs: 10
+  epochs: 30
   num_classes: 8
   early_stopping: false
   path : null # path to model checkpoint set null when training
