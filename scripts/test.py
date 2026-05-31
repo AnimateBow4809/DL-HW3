@@ -30,6 +30,7 @@ if __name__ == '__main__':
     )
 
     print("\n--- Starting Evaluation on Test Set ---")
+    trainer.plot_predictions(test_loader, n=5)
     test_loss, test_iou = trainer.evaluate(test_loader)
     print(f"Final Test Loss: {test_loss:.4f}")
     print(f"Final Test Overall IoU: {test_iou:.4f}\n")

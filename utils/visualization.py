@@ -1,4 +1,5 @@
-﻿import torch
+﻿import numpy as np
+import torch
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -66,3 +67,26 @@ def plot_learning_curves(history):
     plt.tight_layout()
     plt.show()
 
+
+def plot_example(self, x_sample: np.ndarray, y_sample: np.ndarray, pred_sample: np.ndarray):
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    img = np.transpose(x_sample, (1, 2, 0))
+    img = std * img + mean
+    img = np.clip(img, 0, 1)
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+    axes[0].imshow(img)
+    axes[0].set_title("Original Image")
+    axes[0].axis('off')
+
+    axes[1].imshow(y_sample, cmap='tab10', vmin=0, vmax=self.num_classes - 1)
+    axes[1].set_title("Ground Truth Mask")
+    axes[1].axis('off')
+
+    axes[2].imshow(pred_sample, cmap='tab10', vmin=0, vmax=self.num_classes - 1)
+    axes[2].set_title("Predicted Mask")
+    axes[2].axis('off')
+
+    plt.tight_layout()
+    plt.show()

@@ -1,10 +1,11 @@
 ﻿import torch
 import numpy as np
+from numpy import ndarray
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torchinfo import summary
 
-from utils.visualization import plot_learning_curves
+from utils.visualization import plot_learning_curves, plot_example
 from torchmetrics.classification import MulticlassJaccardIndex, MulticlassConfusionMatrix
 
 class Trainer:
@@ -132,3 +133,20 @@ class Trainer:
 
     def plot_learning_curves(self):
         plot_learning_curves(self.history)
+
+    def plot_predictions(self, dataloader, n=5):
+        self.model.eval()
+        samples_plotted = 0
+        with torch.no_grad():
+            for x_batch, y_batch in dataloader:
+                x_batch = x_batch.to(self.device)
+                outputs = self.model(x_batch)
+                preds = torch.argmax(outputs, dim=1)
+                x_batch = x_batch.cpu().numpy()
+                y_batch = y_batch.cpu().numpy()
+                preds = preds.cpu().numpy()
+                for i in range(x_batch.shape[0]):
+                    if samples_plotted >= n:
+                        return
+                    plot_example(x_batch[i], y_batch[i], preds[i])
+                    samples_plotted += 1
