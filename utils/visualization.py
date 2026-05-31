@@ -68,7 +68,7 @@ def plot_learning_curves(history):
     plt.show()
 
 
-def plot_example(self, x_sample: np.ndarray, y_sample: np.ndarray, pred_sample: np.ndarray):
+def plot_example(x_sample: np.ndarray, y_sample: np.ndarray, pred_sample: np.ndarray):
     mean = np.array([0.485, 0.456, 0.406])
     std = np.array([0.229, 0.224, 0.225])
     img = np.transpose(x_sample, (1, 2, 0))
