@@ -27,9 +27,9 @@ if __name__ == '__main__':
     weight_decay = opt_cfg.get('weight_decay', 0.0001)
     train_dataset, val_dataset, test_dataset = get_datasets(config)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     model = get_model(config)
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
 
