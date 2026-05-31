@@ -1,0 +1,114 @@
+﻿# =========================
+# Python / Standard
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+env/
+.env/
+.venv/
+conda_env/
+Pipfile.lock
+
+# Environment variables
+.env
+.env.local
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/
+*.html
+
+# =========================
+# Data / Datasets
+# =========================
+# Ignore data folders (you should only version small samples or scripts that download data)
+datasets/**
+raw_data/**
+processed_data/**
+
+# Specific data file types
+*.csv
+*.tsv
+*.dat
+*.json
+*.sqlite
+*.db
+*.parquet
+*.h5
+*.hdf5
+*.npy
+*.npz
+
+# Images / Media
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.mp4
+*.avi
+
+# =========================
+# Machine Learning Models
+# =========================
+# PyTorch
+*.pt
+*.pth
+*.ckpt
+
+# TensorFlow / Keras
+*.h5
+*.pb
+*.keras
+saved_model/
+
+# Scikit-learn / XGBoost / Generic
+*.pkl
+*.pickle
+*.joblib
+*.model
+*.onnx
+
+# =========================
+# Logs and Outputs
+# =========================
+logs/
+tb_logs/
+runs/
+*.log
+mlruns/
+wandb/
+lightning_logs/
+outputs/
+results/
+predictions/
+
+# =========================
+# OS & IDE Files
+# =========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# VS Code
+.vscode/
+
+# PyCharm / IntelliJ
+.idea/
+
+# macOS / Windows thumbs
+Thumbs.db
+ehthumbs.db
+
+**.gz
+
+!plots/**
+!models/saved/**
