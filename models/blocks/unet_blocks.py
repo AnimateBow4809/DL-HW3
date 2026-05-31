@@ -9,10 +9,10 @@ class UnetBlock(nn.Module):
     def __init__(self, in_channels, out_channels, use_bn=False,
                  pooling=None, expansion=None, padding_mode="reflect"):
         super(UnetBlock, self).__init__()
-
-        self.conv1 = BasicConv2d(in_channels, out_channels, kernel_size=3, stride=1,
+        use_bias = not use_bn
+        self.conv1 = BasicConv2d(in_channels, out_channels, kernel_size=3, stride=1,bias=use_bias,
                                  use_bn=use_bn, use_relu=True, padding="same", padding_mode=padding_mode)
-        self.conv2 = BasicConv2d(out_channels, out_channels, kernel_size=3, stride=1,
+        self.conv2 = BasicConv2d(out_channels, out_channels, kernel_size=3, stride=1,bias=use_bias,
                                  use_bn=use_bn, use_relu=True, padding="same", padding_mode=padding_mode)
 
         self.post_op = nn.Identity()

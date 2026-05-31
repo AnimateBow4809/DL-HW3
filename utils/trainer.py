@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torchinfo import summary
 
-from utils.visualization import plot_learning_curves, plot_confusion_matrix, plot_image_predictions, plot_feature_maps
+from utils.visualization import plot_learning_curves, plot_confusion_matrix
 
 
 class Trainer:
@@ -96,37 +96,6 @@ class Trainer:
         self.model.to(self.device)
         print(f"Model loaded from {filepath}")
 
-    def plot_misclassified_predictions(self, dataLoader: DataLoader, num_images: int = 5,
-                                       image_shape: tuple = (28, 28)):
-        misclassified_imgs = []
-        misclassified_trues = []
-        misclassified_preds = []
-        self.model.eval()
-        with torch.no_grad():
-            for x_batch, y_batch in dataLoader:
-                x_cpu, y_cpu = x_batch.cpu(), y_batch.cpu()
-                x_batch = x_batch.to(self.device)
-                y_batch = y_batch.to(self.device)
-                output = self.model(x_batch)
-                preds = torch.argmax(output, dim=1)
-                wrong_indices = (preds != y_batch).nonzero(as_tuple=True)[0]
-                for idx in wrong_indices:
-                    misclassified_imgs.append(x_cpu[idx].numpy())
-                    misclassified_trues.append(y_cpu[idx].item())
-                    misclassified_preds.append(preds[idx].item())
-
-                    if len(misclassified_imgs) >= num_images:
-                        break
-
-                if len(misclassified_imgs) >= num_images:
-                    break
-
-        if len(misclassified_imgs) == 0:
-            print("No misclassified images found! The model is 100% accurate on this data.")
-            return
-
-        plot_image_predictions(misclassified_imgs, misclassified_trues, misclassified_preds, image_shape)
-
     def get_per_class_accuracy(self, dataLoader: DataLoader, num_classes: int = 10):
         all_labels, all_preds = self._predict(dataLoader)
         per_class_accuracy = {}
@@ -148,10 +117,6 @@ class Trainer:
         y_true, y_pred = self._predict(dataLoader)
         plot_confusion_matrix(y_true, y_pred, class_names=[i for i in range(num_classes)])
 
-    def plot_feature_maps(self, dataLoader: DataLoader):
-        input = next(iter(dataLoader))[0][0].unsqueeze(0)
-        x, y, z = get_first_block_activation(self.model, input)
-        plot_feature_maps(input,x,y,z)
     def _predict(self, dataLoader: DataLoader):
         all_preds = []
         all_labels = []

@@ -1,4 +1,5 @@
-﻿from torch import nn
+﻿import torch
+from torch import nn
 
 from models.blocks.unet_blocks import UnetBlock
 
@@ -17,8 +18,10 @@ class UNet(nn.Module):
         for i in range(self.depth - 1):
             self.encoder_list.append(
                 UnetBlock(self.encoder_dim_list[i], self.encoder_dim_list[i + 1], use_bn=use_bn, pooling=pooling))
+            current_expansion = expansion if i < (self.depth - 2) else None
             self.decoder_list.append(
-                UnetBlock(self.decoder_dim_list[i], self.decoder_dim_list[i + 1], use_bn=use_bn, expansion=expansion))
+                UnetBlock(self.decoder_dim_list[i], self.decoder_dim_list[i + 1], use_bn=use_bn,
+                          expansion=current_expansion))
 
         self.bridge = UnetBlock(self.encoder_dim_list[depth - 1], self.encoder_dim_list[depth], use_bn=use_bn,
                                 expansion=expansion)
