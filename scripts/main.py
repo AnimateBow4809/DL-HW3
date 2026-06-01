@@ -11,6 +11,7 @@ from utils.config_utils import load_config, get_datasets, get_model, set_seed
 if __name__ == '__main__':
     set_seed()
     config = load_config('../config/config.yaml')
+    print(config)
     model_cfg = config.get('model', {})
     data_cfg = config.get('data', {})
     opt_cfg = config.get('optimizer', {})
