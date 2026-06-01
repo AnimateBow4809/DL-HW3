@@ -40,7 +40,6 @@ def compute_class_weights(train_loader: DataLoader, num_classes: int = 8):
 # 5: Goal Bar
 # 6: Advertisement
 # 7: Audience / Spectators
-# 8: Staff / Coaches & Officials
 CLASS_NAMES = [
         "0: Background", "1: Player", "2: Goalkeeper",
         "3: Referee", "4: Ball", "5: Goal Bar",
@@ -48,7 +47,7 @@ CLASS_NAMES = [
     ]
 
 DATASET1_COLOR_MAP = {
-    # (0, 0, 0): 0,  # Background -> Unified: Background (0)
+    (0, 0, 0): 0,  # Background -> Unified: Background (0)
     (201, 158, 74): 0,  # Field -> Unified: Background (0)
     (38, 198, 129): 1,  # Team 1 -> Unified: Player (1)
     (27, 154, 218): 1,  # Team 2 -> Unified: Player (1)
@@ -62,6 +61,7 @@ DATASET1_COLOR_MAP = {
 }
 
 DATASET2_COLOR_MAP = {
+    (0, 0, 0): 0,
     (137, 126, 126): 0,  # Ground (Background)
     (254, 233, 3): 1,  # Team A (Player)
     (255, 160, 1): 1,  # # Team B (Player)
@@ -72,7 +72,6 @@ DATASET2_COLOR_MAP = {
     (255, 0, 29): 5,  # Goal Bar
     (27, 71, 151): 6,  # Advertisement
     (111, 48, 253): 7,  # Audience
-    # (0, 0, 0): 8  # Coaches & Officials (Staff) no samples
 }
 
 

@@ -1,4 +1,8 @@
 ﻿from ultralytics import YOLO
+import matplotlib.pyplot as plt
+
+plt.style.use('default')
+
 
 model = YOLO('yolov8n.pt')
 results = model.train(

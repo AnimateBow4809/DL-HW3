@@ -75,7 +75,7 @@ def get_transforms():
             brightness_limit=0.2,
             contrast_limit=0.2,
             p=0.5
-        ),  # Handles day/night and stadium shadows
+        ),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         ToTensorV2(),
     ])
