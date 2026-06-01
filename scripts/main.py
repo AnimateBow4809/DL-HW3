@@ -15,7 +15,7 @@ if __name__ == '__main__':
     model_cfg = config.get('model', {})
     data_cfg = config.get('data', {})
     opt_cfg = config.get('optimizer', {})
-    use_focal_loss = model_cfg.get("use_focal_loss", False)
+    use_focal_loss = opt_cfg.get("use_focal_loss", False)
     device = model_cfg.get('device', 'cpu')
     epochs = model_cfg.get('epochs', 5)
     early_stopping = model_cfg.get('early_stopping', False)
@@ -61,4 +61,5 @@ if __name__ == '__main__':
         epochs=epochs
     )
     trainer.plot_learning_curves()
-    trainer.save_model(f"../models/saved/model_focal_{use_focal_loss}_epoch_{epochs}_bs_{batch_size}_skip_{use_skip}_expansion_{expansion}_bn_{use_bn}.pth")
+    trainer.save_model(
+        f"../models/saved/model_focal_{use_focal_loss}_epoch_{epochs}_bs_{batch_size}_skip_{use_skip}_expansion_{expansion}_bn_{use_bn}.pth")
